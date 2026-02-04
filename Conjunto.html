@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDN - Análisis Nacional</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #7B4B94;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 11px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #7B4B94 0%, #5A8FC7 100%);
+        }
+
+        .page-icon {
+            font-size: 52px;
+            margin-bottom: 15px;
+        }
+
+        .page-title {
+            color: #FFB3B3;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #FFB3B3;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-section {
+            background: rgba(155, 107, 176, 0.08);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(123, 75, 148, 0.2);
+        }
+
+        .search-title {
+            color: #7B4B94;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .search-info {
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .search-info li {
+            margin: 5px 0;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-grid.eight-col {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        .search-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-clear {
+            background: #E8E8E8;
+            color: #7B4B94;
+        }
+
+        .btn-search {
+            background: #7B4B94;
+            color: white;
+        }
+
+        .radio-group {
+            margin: 20px 0;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        /* Sección de Análisis Nacional */
+        .national-analysis {
+            background: linear-gradient(135deg, #9B6BB0 0%, #6B9BC3 100%);
+            padding: 35px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 26px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-intro {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 28px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .stat-value {
+            font-size: 44px;
+            font-weight: bold;
+            color: #7B4B94;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            color: #7B4B94;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .full-width-chart {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .metric-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .metric-info {
+            flex: 1;
+        }
+
+        .metric-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .metric-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .metric-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #7B4B94;
+        }
+
+        .alert-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #D32F2F;
+            color: white;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .footer {
+            background: #7B4B94;
+            padding: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .footer-logo {
+            max-width: 150px;
+        }
+
+        /* Tooltip styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #7B4B94;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            line-height: 16px;
+            cursor: help;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 320px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -160px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">PDN</div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item">🏠 Inicio</a>
+            <a href="#" class="nav-item">🔍 Consultar Declaraciones</a>
+            <a href="#" class="nav-item">📊 Análisis Nacional</a>
+            <a href="#" class="nav-item">📋 Reportes</a>
+            <a href="#" class="nav-item">⚙️ Configuración</a>
+        </nav>
+    </div>
+
+    <div class="page-header">
+        <div class="page-icon">📊</div>
+        <h1 class="page-title">PLATAFORMA DIGITAL NACIONAL</h1>
+        <p class="page-subtitle">Sistema Nacional Anticorrupción</p>
+    </div>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="search-title">
+                <span>🔎</span>
+                Búsqueda Avanzada de Servidores Públicos
+            </div>
+            <div class="search-info">
+                <strong>Instrucciones:</strong>
+                <ul>
+                    <li>Ingrese los criterios de búsqueda deseados</li>
+                    <li>Puede combinar múltiples campos para refinar su búsqueda</li>
+                    <li>Los campos marcados con * son obligatorios</li>
+                </ul>
+            </div>
+
+            <div class="search-grid">
+                <input type="text" class="search-input" placeholder="Nombre(s) *">
+                <input type="text" class="search-input" placeholder="Primer Apellido *">
+                <input type="text" class="search-input" placeholder="Segundo Apellido">
+                <input type="text" class="search-input" placeholder="RFC">
+            </div>
+
+            <div class="search-grid">
+                <input type="text" class="search-input" placeholder="CURP">
+                <input type="text" class="search-input" placeholder="Cargo / Puesto">
+                <select class="search-input">
+                    <option>Entidad Federativa</option>
+                    <option>Aguascalientes</option>
+                    <option>Baja California</option>
+                    <option>Guanajuato</option>
+                </select>
+                <select class="search-input">
+                    <option>Dependencia / Institución</option>
+                </select>
+            </div>
+
+            <div class="search-grid eight-col">
+                <input type="date" class="search-input" placeholder="Fecha Inicio Declaración">
+                <input type="date" class="search-input" placeholder="Fecha Fin Declaración">
+                <select class="search-input">
+                    <option>Tipo de Declaración</option>
+                    <option>Inicial</option>
+                    <option>Modificación</option>
+                    <option>Conclusión</option>
+                </select>
+                <input type="text" class="search-input" placeholder="No. de Folio">
+                <input type="number" class="search-input" placeholder="Patrimonio Mínimo">
+                <input type="number" class="search-input" placeholder="Patrimonio Máximo">
+                <input type="number" class="search-input" placeholder="Ingreso Mínimo">
+                <input type="number" class="search-input" placeholder="Ingreso Máximo">
+            </div>
+
+            <div class="radio-group">
+                <strong>Tipo de Servidor Público:</strong>
+                <label>
+                    <input type="radio" name="tipo" checked> Todos
+                    <input type="radio" name="tipo"> Federal
+                    <input type="radio" name="tipo"> Estatal
+                    <input type="radio" name="tipo"> Municipal
+                </label>
+            </div>
+
+            <div class="search-buttons">
+                <button class="btn btn-clear">Limpiar Filtros</button>
+                <button class="btn btn-search">Buscar</button>
+            </div>
+        </div>
+
+        <!-- Análisis Nacional -->
+        <div class="national-analysis">
+            <h2 class="section-title">Análisis Nacional de Evolución Patrimonial y Riesgo de Corrupción</h2>
+            <p class="section-intro">
+                Esta sección presenta indicadores agregados y medias estadísticas del análisis patrimonial de servidores públicos a nivel nacional. Los datos reflejan patrones de evolución patrimonial, distribución de niveles de riesgo y tendencias sectoriales, proporcionando una visión panorámica del estado actual del sistema de declaraciones patrimoniales en México.
+            </p>
+
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value" style="color: #D32F2F;">0.26%
+                        <div class="tooltip-container">
+                            <span class="tooltip-icon">i</span>
+                            <span class="tooltip-text"><strong>Clasificación de Alto Riesgo:</strong> Se asigna cuando se cumplen 7+ puntos de riesgo:<br>• Incremento patrimonial >100% (+3 pts)<br>• Bienes >3x ingresos (+2 pts)<br>• Adeudos >1.5x ingresos (+2 pts)<br>• Otros ingresos >2x salario público (+2 pts)<br>Requieren investigación prioritaria</span>
+                        </div>
+                    </div>
+                    <div class="stat-label">1,587 Servidores Públicos<br><strong>RIESGO ALTO</strong><br>Incremento patrimonial superior al 200%.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: #F57C00;">15.72%
+                        <div class="tooltip-container">
+                            <span class="tooltip-icon">i</span>
+                            <span class="tooltip-text"><strong>Clasificación de Riesgo Medio:</strong> Acumulan entre 4-6 puntos de riesgo. Presentan al menos dos indicadores de alerta que ameritan revisión detallada pero no urgente. Pueden incluir incrementos moderados o ratios ligeramente elevados.</span>
+                        </div>
+                    </div>
+                    <div class="stat-label">97,559 Servidores Públicos<br><strong>RIESGO MEDIO</strong><br>Incremento patrimonial entre 100-200%. Requiere seguimiento y verificación detallada.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: #388E3C;">84.02%
+                        <div class="tooltip-container">
+                            <span class="tooltip-icon">i</span>
+                            <span class="tooltip-text"><strong>Riesgo Bajo:</strong> Declaraciones con 0-3 puntos de riesgo. No presentan alertas significativas en los indicadores analizados. Perfiles considerados sin irregularidades evidentes que ameriten investigación.</span>
+                        </div>
+                    </div>
+                    <div class="stat-label">521,249 Servidores Públicos<br><strong>RIESGO BAJO</strong><br>Incremento patrimonial. Patrimonio dentro de rangos esperados.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">620,395</div>
+                    <div class="stat-label"><strong>Total Nacional</strong><br>Servidores públicos analizados en el sistema</div>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3 class="chart-title">Evolución Patrimonial Nacional</h3>
+                    <canvas id="nationalPatrimonyChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">Distribución Nacional de Riesgo</h3>
+                    <canvas id="incrementDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="full-width-chart">
+                <h3 class="chart-title">Incremento Patrimonial por Nivel de Gobierno</h3>
+                <canvas id="sectorComparisonChart"></canvas>
+            </div>
+
+            <!-- Métricas adicionales -->
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-info">
+                        <div class="metric-title">Declaraciones Totales Analizadas</div>
+                        <div class="metric-subtitle">Período 2020-2025</div>
+                    </div>
+                    <div class="metric-number" style="color: #7B4B94;">2,542,176</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-info">
+                        <div class="metric-title">Declaraciones Inconsistentes</div>
+                        <div class="metric-subtitle">Información contradictoria detectada</div>
+                    </div>
+                    <div>
+                        <div class="metric-number" style="color: #D32F2F;">38,695</div>
+                        <div class="alert-badge">CRÍTICO</div>
+                    </div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-info">
+                        <div class="metric-title">Omisiones Totales</div>
+                        <div class="metric-subtitle">Bienes e ingresos no declarados</div>
+                    </div>
+                    <div class="metric-number" style="color: #F57C00;">89,234</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-info">
+                        <div class="metric-title">Alertas Automáticas Generadas</div>
+                        <div class="metric-subtitle">Sistema de detección inteligente</div>
+                    </div>
+                    <div class="metric-number" style="color: #F57C00;">156,893</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-info">
+                        <div class="metric-title">Variación Patrimonial Promedio</div>
+                        <div class="metric-subtitle">Incremento anual nacional</div>
+                    </div>
+                    <div class="metric-number" style="color: #7B4B94;">+87%</div>
+                </div>
+            </div>
+
+            <!-- Análisis por Entidad Federativa -->
+            <div class="full-width-chart" style="margin-top: 25px;">
+                <h3 class="chart-title">Porcentaje de Servidores Públicos en Riesgo Alto por Entidad Federativa</h3>
+                <canvas id="stateRiskChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="text-align: center;">
+            <img src="https://via.placeholder.com/150x60/7B4B94/FFFFFF?text=SNA" alt="SNA" class="footer-logo">
+        </div>
+        <div style="text-align: center;">
+            <img src="https://via.placeholder.com/150x60/7B4B94/FFFFFF?text=Secretaría" alt="Secretaría" class="footer-logo">
+        </div>
+        <div style="text-align: center;">
+            <img src="https://via.placeholder.com/150x60/7B4B94/FFFFFF?text=PDN" alt="PDN" class="footer-logo">
+        </div>
+    </div>
+
+    <script>
+        // Gráfica 1: Evolución Patrimonial Nacional
+        const ctx1 = document.getElementById('nationalPatrimonyChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Patrimonio Promedio Nacional',
+                    data: [1850000, 2340000, 3120000, 4280000, 5890000, 7650000],
+                    borderColor: '#7B4B94',
+                    backgroundColor: 'rgba(123, 75, 148, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Ingreso Promedio Nacional',
+                    data: [1850000, 1980000, 2120000, 2270000, 2430000, 2600000],
+                    borderColor: '#6B9BC3',
+                    backgroundColor: 'rgba(107, 155, 195, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfica 2: Distribución de Incremento
+        const ctx2 = document.getElementById('incrementDistributionChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Riesgo Bajo (<100%)', 'Riesgo Medio (100-200%)', 'Riesgo Alto (>200%)'],
+                datasets: [{
+                    data: [84.02, 15.72, 0.26],
+                    backgroundColor: ['#388E3C', '#F57C00', '#D32F2F'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfica 3: Comparación por Nivel de Gobierno
+        const ctx3 = document.getElementById('sectorComparisonChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Federal', 'Estatal', 'Municipal', 'Órganos Autónomos'],
+                datasets: [{
+                    label: 'Incremento Promedio (%)',
+                    data: [156, 203, 178, 142],
+                    backgroundColor: function(context) {
+                        const value = context.parsed.y;
+                        if (value > 200) return '#D32F2F';
+                        if (value > 100) return '#F57C00';
+                        return '#388E3C';
+                    },
+                    borderColor: '#7B4B94',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Incremento Patrimonial Promedio (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfica 4: Riesgo por Estado - ORDENADA DE MAYOR A MENOR
+        const ctx4 = document.getElementById('stateRiskChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['Jalisco', 'Baja California Sur', 'Quintana Roo', 'Zacatecas', 'Aguascalientes'],
+                datasets: [{
+                    label: 'Porcentaje de Servidores en Riesgo Alto',
+                    data: [12.04, 10.21, 7.59, 2.84, 1.67],
+                    backgroundColor: function(context) {
+                        const value = context.parsed.y;
+                        if (value > 10) return '#D32F2F';
+                        if (value > 5) return '#F57C00';
+                        return '#FDD835';
+                    }
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 15,
+                        title: {
+                            display: true,
+                            text: 'Porcentaje de Servidores en Riesgo Alto (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDN - Análisis Individual de Servidor Público</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #7B4B94;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 11px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: #7B4B94;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .sidebar-item.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-section {
+            background: #9B6BB0;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row.two-col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .form-row.one-col {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 11px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+        }
+
+        .form-input[readonly] {
+            background: #C4A8D1;
+            color: white;
+        }
+
+        .download-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .download-text {
+            color: #7B4B94;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .download-btn {
+            background: #7B4B94;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: #7B4B94;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Sección de análisis individual */
+        .analysis-section {
+            background: #9B6BB0;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .analysis-title {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .analysis-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .server-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #7B4B94;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .chart-title {
+            color: #7B4B94;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .chart-subtitle {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .chart-explanation {
+            color: #555;
+            font-size: 11px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        .chart-explanation strong {
+            color: #7B4B94;
+        }
+
+        .full-width-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            cursor: help;
+        }
+
+        .risk-critical {
+            background: #D32F2F;
+            color: white;
+        }
+
+        .risk-warning {
+            background: #F57C00;
+            color: white;
+        }
+
+        .risk-info {
+            background: #1976D2;
+            color: white;
+        }
+
+        .risk-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .alerts-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .alerts-title {
+            color: #7B4B94;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .alert-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+
+        .alert-critical {
+            background: rgba(211, 47, 47, 0.1);
+            border-left-color: #D32F2F;
+        }
+
+        .alert-warning {
+            background: rgba(245, 124, 0, 0.1);
+            border-left-color: #F57C00;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            min-width: 30px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .alert-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Tooltip styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #7B4B94;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            line-height: 16px;
+            cursor: help;
+            margin-left: 5px;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 320px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -160px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .matiz-note {
+            background: #FFF9E6;
+            border-left: 4px solid #F57C00;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">PDN</div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item">🏠 Inicio</a>
+            <a href="#" class="nav-item">🔍 Consultar Declaraciones</a>
+            <a href="#" class="nav-item">📊 Análisis Nacional</a>
+            <a href="#" class="nav-item">📋 Reportes</a>
+            <a href="#" class="nav-item">⚙️ Configuración</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <button class="back-btn">← Regresar a búsqueda</button>
+
+        <div class="analysis-section">
+            <h2 class="analysis-title">Análisis Individual de Servidor Público</h2>
+            <p class="analysis-subtitle">Evaluación detallada de evolución patrimonial y factores de riesgo</p>
+
+            <div class="server-info">
+                <div class="info-item">
+                    <div class="info-label">DEPENDENCIA</div>
+                    <div class="info-value">SISTEMA INTEGRAL DE ASEO PÚBLICO DE LEÓN, GUANAJUATO</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">NOMBRE COMPLETO</div>
+                    <div class="info-value">JUAN PÉREZ GARCÍA</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">RFC</div>
+                    <div class="info-value">PEGJ850315ABC</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">CURP</div>
+                    <div class="info-value">PEGJ850315HGTRRN09</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="full-width-chart" style="grid-column: 1 / -1;">
+                    <h3 class="chart-title">Evolución Patrimonial vs Ingreso Declarado</h3>
+                    <p class="chart-subtitle">Este gráfico refiere exclusivamente a los ingresos derivados de su salario como servidor público</p>
+                    <canvas id="patrimonialEvolution"></canvas>
+                    <div class="chart-explanation">
+                        <strong>Guía de lectura del gráfico:</strong><br>
+                        • La <strong style="color: #4A7BA7;">línea azul</strong> representa la evolución del salario del servidor público a lo largo del tiempo, desde su ingreso inicial hasta su ingreso final.<br>
+                        • La <strong style="color: #7B4B94;">línea morada punteada</strong> muestra la evolución del patrimonio a lo largo del tiempo.
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h3 class="chart-title">Incremento Patrimonial Comparativo</h3>
+                    <canvas id="incrementComparison"></canvas>
+                </div>
+
+                <div class="chart-wrapper">
+                    <h3 class="chart-title">Composición Patrimonial Actual</h3>
+                    <canvas id="patrimonialComposition"></canvas>
+                </div>
+            </div>
+
+            <div class="full-width-chart">
+                <div style="text-align: center;">
+                    <div class="tooltip-container">
+                        <span class="risk-badge risk-critical">RIESGO ALTO</span>
+                        <span class="tooltip-icon">i</span>
+                        <span class="tooltip-text"><strong>Sistema de Clasificación de Riesgo:</strong><br><br><strong>Alto Riesgo (7+ pts):</strong> Incremento patrimonial >100% (+3 pts), Bienes >3x ingresos (+2 pts), Adeudos >1.5x ingresos (+2 pts), Otros ingresos >2x salario público (+2 pts). Requieren investigación prioritaria.<br><br><strong>Riesgo Medio (4-6 pts):</strong> Al menos dos indicadores de alerta. Revisión detallada no urgente.<br><br><strong>Riesgo Bajo (0-3 pts):</strong> Sin alertas significativas. Sin irregularidades evidentes.</span>
+                    </div>
+                    <div class="risk-description">El incremento patrimonial detectado supera en 312%</div>
+                </div>
+            </div>
+
+            <div class="alerts-section">
+                <h3 class="alerts-title">Alertas y Anomalías Detectadas</h3>
+                
+                <div class="alert-item alert-critical">
+                    <div class="alert-icon">🚨</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Incremento patrimonial no justificado</div>
+                        <div class="alert-description">Se detectó un incremento de $2,650,000 en los últimos 3 años. El ingreso declarado solo justifica un incremento máximo de $588,711</div>
+                        <div class="matiz-note">
+                            Nota: La metodología no considera ingresos o bienes patrimoniales en pareja, copropiedad u otras formas de tenencia compartida. Esta alerta requiere verificación adicional.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-critical">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Adquisición de inmueble sin origen claro</div>
+                        <div class="alert-description">Propiedad valuada en $1,850,000 adquirida en 2023. No hay registro de préstamos o fuentes alternas de ingreso</div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-warning">
+                    <div class="alert-icon">📋</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Omisión de vehículos en declaración anterior</div>
+                        <div class="alert-description">Se identificaron 2 vehículos no reportados en la declaración de 2022, declarados hasta 2024</div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-warning">
+                    <div class="alert-icon">💰</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Inversiones bancarias superiores al ingreso anual</div>
+                        <div class="alert-description">Cuenta de inversión por $450,000 sin origen documentado. Supera el 200% del ingreso anual declarado</div>
+                    </div>
+                </div>
+
+                <div class="alert-item alert-critical">
+                    <div class="alert-icon">🔍</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Declaración marcada para revisión exhaustiva</div>
+                        <div class="alert-description">Este caso ha sido escalado al área de investigación por acumulación de 5 alertas de alto riesgo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <div class="download-text">Descarga todos los datos</div>
+            <div class="download-text">{ JSON }</div>
+            <button class="download-btn">⬇</button>
+        </div>
+    </div>
+
+    <script>
+        // Gráfica Principal: Evolución Patrimonial
+        const ctx1 = document.getElementById('patrimonialEvolution').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [{
+                    label: 'Ingreso Mensual Declarado',
+                    data: [163530, 320000, 500000, 700000, 1000000, 1300000, 1600000, 1700000, 1750000, 1900000, 2200000, 2350000],
+                    borderColor: '#4A7BA7',
+                    backgroundColor: 'rgba(74, 123, 167, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Patrimonio Total',
+                    data: [850000, 920000, 1100000, 1250000, 1450000, 1680000, 1920000, 2180000, 2450000, 2750000, 3100000, 3500000],
+                    borderColor: '#7B4B94',
+                    backgroundColor: 'rgba(123, 75, 148, 0.1)',
+                    borderWidth: 3,
+                    borderDash: [8, 4],
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += '$' + context.parsed.y.toLocaleString();
+                                if (context.datasetIndex === 2 && context.dataIndex > 0) {
+                                    const prev = context.dataset.data[context.dataIndex - 1];
+                                    const increase = ((context.parsed.y - prev) / prev * 100).toFixed(1);
+                                    label += ' (+' + increase + '%)';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Monto (MXN)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfica de Incremento
+        const ctx2 = document.getElementById('incrementComparison').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Incremento Real del Servidor',
+                    data: [0, 18, 45, 89, 156, 312],
+                    backgroundColor: '#D32F2F',
+                    borderColor: '#D32F2F',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Incremento Porcentual (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfica de Composición Patrimonial
+        const ctx3 = document.getElementById('patrimonialComposition').getContext('2d');
+        new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['Inmuebles', 'Vehículos', 'Inversiones', 'Cuentas Bancarias', 'Otros Bienes'],
+                datasets: [{
+                    data: [52.9, 14.3, 12.9, 11.4, 8.5],
+                    backgroundColor: [
+                        '#7B4B94',
+                        '#9B6BB0',
+                        '#4A7BA7',
+                        '#6B9BC3',
+                        '#8BB5D9'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
